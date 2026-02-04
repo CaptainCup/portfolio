@@ -7,12 +7,12 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 export default function Home() {
 	return (
 		<div className='flex min-h-screen items-center justify-center font-sans bg-slate-900'>
-			<main className='flex flex-col w-full items-center justify-center gap-4 p-8'>
+			<main className='flex flex-col w-full items-center justify-center gap-4 p-4 lg:p-8'>
 				{/* Обо мне */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>👋 Привет, я</h2>
 
-					<div className='flex items-center gap-8'>
+					<div className='flex flex-col lg:flex-row items-center gap-8'>
 						<div className='rounded-full overflow-hidden'>
 							<Image
 								src='/profile.jpg'
@@ -22,14 +22,14 @@ export default function Home() {
 							/>
 						</div>
 						<div>
-							<p className='text-4xl'>Гаврилов Илья Юрьевич</p>
+							<p className='text-2xl lg:text-4xl'>Гаврилов Илья Юрьевич</p>
 							<p className='text-xl'>Frontend Developer</p>
 						</div>
 					</div>
 				</section>
 
 				{/* Контакты */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>🤙 Можешь связаться со мной так</h2>
 
 					<div className='flex lg:flex-row flex-col gap-8'>
@@ -59,7 +59,7 @@ export default function Home() {
 				</section>
 
 				{/* Информация */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>👨🏻‍🎓 Вообще, я</h2>
 
 					<div className='flex flex-col gap-2'>
@@ -71,7 +71,7 @@ export default function Home() {
 
 					<div className='flex flex-col gap-2'>
 						<h3>Образование</h3>
-						<p>Высшее</p>
+						<p>Высшее (специалитет)</p>
 					</div>
 
 					<div className='flex flex-col gap-2'>
@@ -91,7 +91,7 @@ export default function Home() {
 				</section>
 
 				{/* Навыки */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>💪 Умею использовать</h2>
 
 					<div className='flex flex-col gap-2'>
@@ -337,7 +337,7 @@ export default function Home() {
 				</section>
 
 				{/* Проект 1 */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>📈 Участвовал в разработке</h2>
 
 					<div className='flex flex-col gap-2'>
@@ -428,7 +428,7 @@ export default function Home() {
 				</section>
 
 				{/* Проект 2 */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>🧩 Немного поработал тут</h2>
 
 					<div className='flex flex-col gap-2'>
@@ -496,7 +496,7 @@ export default function Home() {
 				</section>
 
 				{/* Проект 3 */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>🔐 Успел поработать здесь</h2>
 
 					<div className='flex flex-col gap-2'>
@@ -547,7 +547,7 @@ export default function Home() {
 				</section>
 
 				{/* Проект 4 */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>🛠 Покранчил на</h2>
 
 					<div className='flex flex-col gap-2'>
@@ -630,7 +630,7 @@ export default function Home() {
 				</section>
 
 				{/* Проект 5 */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>🛒 Было интересно тут</h2>
 
 					<div className='flex flex-col gap-2'>
@@ -697,7 +697,7 @@ export default function Home() {
 				</section>
 
 				{/* Проект 6 */}
-				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-12 border-white'>
+				<section className='flex flex-col gap-8 w-full max-w-5xl border-2 rounded-4xl p-8 lg:p-12 border-white'>
 					<h2 className='text-2xl'>💰 Начинал свой путь здесь</h2>
 
 					<div className='flex flex-col gap-2'>
