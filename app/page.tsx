@@ -107,11 +107,52 @@ export default function Home() {
 			el.scrollLeft = newPosition;
 		};
 
+		let startX = 0;
+
+		const onDown = (e: PointerEvent) => {
+			startX = e.clientX;
+		};
+
+		const onMove = (e: PointerEvent) => {
+			e.preventDefault();
+
+			const delta = e.clientX - startX;
+
+			startX = e.clientX;
+
+			if (delta > 0 || !nextStop) {
+				return;
+			}
+
+			const newPosition = el.scrollLeft - delta * 0.7;
+
+			if (nextStop && nextStop.buttonPosition - width / 2 < newPosition) {
+				el.scrollLeft = nextStop.buttonPosition - width / 2;
+				setIsClickable(true);
+				return;
+			}
+
+			if (walkingTimeout.current) {
+				clearTimeout(walkingTimeout.current);
+			}
+
+			setStatus('walk');
+
+			walkingTimeout.current = setTimeout(() => setStatus('idle'), 300);
+			el.scrollLeft = newPosition;
+		};
+
 		if (!isEnd && status !== 'jump') {
 			el.addEventListener('wheel', onWheel, {passive: false});
+			el.addEventListener('pointerdown', onDown);
+			el.addEventListener('pointermove', onMove);
 		}
 
-		return () => el.removeEventListener('wheel', onWheel);
+		return () => {
+			el.removeEventListener('wheel', onWheel);
+			el.removeEventListener('pointerdown', onDown);
+			el.removeEventListener('pointermove', onMove);
+		};
 	}, [sections, isEnd, status]);
 
 	return (
