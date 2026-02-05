@@ -1,0 +1,45 @@
+.show-1 {
+	display: none;
+
+	.container[data-show-1='true'] & {
+		display: block;
+		animation: appear 1s;
+	}
+}
+
+.show-2 {
+	display: none;
+
+	.container[data-show-2='true'] & {
+		display: block;
+		animation: appear 1s;
+	}
+}
+
+.show-3 {
+	display: none;
+
+	.container[data-show-3='true'] & {
+		display: block;
+		animation: appear 1s;
+	}
+}
+
+.show-4 {
+	display: none;
+
+	.container[data-show-4='true'] & {
+		display: block;
+		animation: appear 1s;
+	}
+}
+
+@keyframes appear {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
