@@ -8,7 +8,7 @@ export const contactsSectionBlocksCount = 1;
 
 export const ContactsSection = () => {
 	return (
-		<div className='flex flex-col gap-8 w-full h-full border-4 rounded-4xl p-8 lg:p-12 bg-white border-black'>
+		<>
 			<h2 className='text-2xl'>🤙 Можешь связаться со мной так</h2>
 
 			<div className={styles['show-1']}>
@@ -37,6 +37,6 @@ export const ContactsSection = () => {
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };

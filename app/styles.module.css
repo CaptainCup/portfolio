@@ -2,12 +2,8 @@
 	background: #68aadc;
 }
 
-.container {
-	touch-action: none;
-}
-
 .container::-webkit-scrollbar {
-	display: none; /* Older Safari and Chromium */
+	display: none;
 }
 
 .character {

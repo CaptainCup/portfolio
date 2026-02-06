@@ -20,7 +20,7 @@ const animation = {
 export default function Home() {
 	const [sections, setSections] = useState<SectionInfo[]>([]);
 	const [isEnd, setIsEnd] = useState(false);
-	const [isClickable, setIsClickable] = useState(false);
+	const [reachedSections, setReachedSections] = useState<string[]>([]);
 	const [status, setStatus] = useState<keyof typeof animation>('idle');
 	const walkingTimeout = useRef<ReturnType<typeof setTimeout>>(null);
 
@@ -63,7 +63,6 @@ export default function Home() {
 
 			return draft;
 		});
-		setIsClickable(false);
 	};
 
 	const jump = () => {
@@ -93,7 +92,7 @@ export default function Home() {
 
 			if (nextStop && nextStop.buttonPosition - width / 2 < newPosition) {
 				el.scrollLeft = nextStop.buttonPosition - width / 2;
-				setIsClickable(true);
+				setReachedSections(draft => [...draft, nextStop.sectionName]);
 				return;
 			}
 
@@ -109,26 +108,26 @@ export default function Home() {
 
 		let startX = 0;
 
-		const onDown = (e: PointerEvent) => {
-			startX = e.clientX;
+		const onDown = (e: TouchEvent) => {
+			startX = e.touches[0].clientX;
 		};
 
-		const onMove = (e: PointerEvent) => {
+		const onMove = (e: TouchEvent) => {
 			e.preventDefault();
 
-			const delta = e.clientX - startX;
+			const delta = startX - e.touches[0].clientX;
 
-			startX = e.clientX;
+			startX = e.touches[0].clientX;
 
-			if (delta > 0 || !nextStop) {
+			if (delta < 0 || !nextStop) {
 				return;
 			}
 
-			const newPosition = el.scrollLeft - delta * 0.7;
+			const newPosition = el.scrollLeft + delta * 0.7;
 
 			if (nextStop && nextStop.buttonPosition - width / 2 < newPosition) {
 				el.scrollLeft = nextStop.buttonPosition - width / 2;
-				setIsClickable(true);
+				setReachedSections(draft => [...draft, nextStop.sectionName]);
 				return;
 			}
 
@@ -144,14 +143,14 @@ export default function Home() {
 
 		if (!isEnd && status !== 'jump') {
 			el.addEventListener('wheel', onWheel, {passive: false});
-			el.addEventListener('pointerdown', onDown);
-			el.addEventListener('pointermove', onMove);
+			el.addEventListener('touchstart', onDown);
+			el.addEventListener('touchmove', onMove);
 		}
 
 		return () => {
 			el.removeEventListener('wheel', onWheel);
-			el.removeEventListener('pointerdown', onDown);
-			el.removeEventListener('pointermove', onMove);
+			el.removeEventListener('touchstart', onDown);
+			el.removeEventListener('touchmove', onMove);
 		};
 	}, [sections, isEnd, status]);
 
@@ -159,7 +158,12 @@ export default function Home() {
 		<div className={`${styles.body} h-screen `}>
 			<main
 				ref={ref}
-				className={`${styles.container} ${styles.sky} ${isEnd ? 'flex-col' : 'flex-row'} pb-32 static flex items-end h-11/12 overflow-y-visible overflow-x-auto`}
+				className={`
+					${styles.container} 
+					${styles.sky} 
+					${isEnd ? 'touch-auto' : 'touch-none'} 
+					${isEnd ? 'flex-col' : 'flex-row'} 
+					pb-32 static flex items-end h-11/12 overflow-y-visible overflow-x-auto`}
 			>
 				{/* Обо мне */}
 				<section className='w-screen min-w-screen p-8'>
@@ -186,99 +190,95 @@ export default function Home() {
 				{/* Информация */}
 				<ContentSection
 					sectionName={'info'}
-					isClickable={isClickable}
+					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('info', buttonPosition)
 					}
-					handleClickMore={jump}
 					passSection={() => passSection('info')}
 				/>
 
 				{/* Навыки */}
 				<ContentSection
 					sectionName={'skills'}
-					isClickable={isClickable}
+					isClickable={reachedSections.includes('skills')}
 					initializeSection={buttonPosition =>
 						initializeSection('skills', buttonPosition)
 					}
-					handleClickMore={jump}
 					passSection={() => passSection('skills')}
 				/>
 
 				{/* Проект 1 */}
 				<ContentSection
 					sectionName={'projectOne'}
-					isClickable={isClickable}
+					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectOne', buttonPosition)
 					}
-					handleClickMore={jump}
 					passSection={() => passSection('projectOne')}
 				/>
 
 				{/* Проект 2 */}
-				<ContentSection
+				{/* <ContentSection
 					sectionName={'projectTwo'}
-					isClickable={isClickable}
+					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectTwo', buttonPosition)
 					}
-					handleClickMore={jump}
+					
 					passSection={() => passSection('projectTwo')}
-				/>
+				/> */}
 
 				{/* Проект 3 */}
-				<ContentSection
+				{/* <ContentSection
 					sectionName={'projectThree'}
-					isClickable={isClickable}
+					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectThree', buttonPosition)
 					}
-					handleClickMore={jump}
+					
 					passSection={() => passSection('projectThree')}
-				/>
+				/> */}
 
 				{/* Проект 4 */}
-				<ContentSection
+				{/* <ContentSection
 					sectionName={'projectFour'}
-					isClickable={isClickable}
+					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectFour', buttonPosition)
 					}
-					handleClickMore={jump}
+					
 					passSection={() => passSection('projectFour')}
-				/>
+				/> */}
 
 				{/* Проект 5 */}
-				<ContentSection
+				{/* <ContentSection
 					sectionName={'projectFive'}
-					isClickable={isClickable}
+					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectFive', buttonPosition)
 					}
-					handleClickMore={jump}
+					
 					passSection={() => passSection('projectFive')}
-				/>
+				/> */}
 
 				{/* Проект 6 */}
-				<ContentSection
+				{/* <ContentSection
 					sectionName={'projectSix'}
-					isClickable={isClickable}
+					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectSix', buttonPosition)
 					}
-					handleClickMore={jump}
+					
 					passSection={() => passSection('projectSix')}
-				/>
+				/> */}
 
 				{/* Контакты */}
 				<ContentSection
 					sectionName={'contacts'}
-					isClickable={isClickable}
+					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('contacts', buttonPosition)
 					}
-					handleClickMore={() => null}
 					passSection={() => {
 						toggleEnd();
 						passSection('contacts');
@@ -292,7 +292,7 @@ export default function Home() {
 					<Image src={animation[status]} width={128} height={128} alt='' />
 				</div>
 			</main>
-			<div className={`${styles.grass} w-screen h-1/12 bg-lime-500`} />
+			<div className={`${styles.grass} w-screen h-1/12`} />
 		</div>
 	);
 }

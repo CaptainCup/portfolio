@@ -2,7 +2,7 @@
 
 import {ReactNode, useEffect, useRef} from 'react';
 import styles from './styles.module.css';
-import LaptopChromebookIcon from '@mui/icons-material/LaptopChromebook';
+import SmsIcon from '@mui/icons-material/Sms';
 import {InfoSection, infoSectionBlocksCount} from './sections/InfoSection';
 import {
 	SkillsSection,
@@ -88,7 +88,6 @@ type ContentSectionProps = {
 	sectionName: string;
 	initializeSection: (buttonPosition: number) => void;
 	passSection: () => void;
-	handleClickMore: () => void;
 };
 
 const ContentSection = ({
@@ -96,7 +95,6 @@ const ContentSection = ({
 	sectionName,
 	initializeSection,
 	passSection,
-	handleClickMore,
 }: ContentSectionProps) => {
 	const buttonRef = useRef<HTMLButtonElement | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
@@ -104,7 +102,6 @@ const ContentSection = ({
 
 	const handleClick = () => {
 		if (isClickable && containerRef.current && buttonRef.current) {
-			handleClickMore();
 			const nextBlock = blockNumberRef.current + 1;
 			blockNumberRef.current = nextBlock;
 
@@ -128,16 +125,18 @@ const ContentSection = ({
 	return (
 		<section
 			ref={containerRef}
-			className={`${styles.container} flex flex-col w-screen min-w-screen px-8`}
+			className={`${styles.container} ${isClickable ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000 flex flex-col items-center w-screen min-w-screen px-8`}
 		>
-			{sections[sectionName].content}
+			<div className='flex flex-col items-center gap-8 max-w-5xl w-full h-full border-4 rounded-4xl p-8 lg:p-12 bg-white border-black'>
+				{sections[sectionName].content}
+			</div>
 
 			<button
 				ref={buttonRef}
 				onClick={handleClick}
-				className={` w-fit m-auto mt-4 bg-white p-2 border-black border-4`}
+				className={`w-fit mt-4 bg-white p-2 border-black border-4 rounded-xl`}
 			>
-				<LaptopChromebookIcon />
+				<SmsIcon />
 			</button>
 		</section>
 	);

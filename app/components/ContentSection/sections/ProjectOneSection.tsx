@@ -4,7 +4,7 @@ export const projectOneSectionBlocksCount = 3;
 
 export const ProjectOneSection = () => {
 	return (
-		<div className='flex flex-col items-center gap-8 w-full h-full border-4 rounded-4xl p-8 lg:p-12 border-black bg-white'>
+		<>
 			<h2 className='text-2xl'>📈 Участвовал в разработке</h2>
 
 			<div className={styles['show-1']}>
@@ -104,6 +104,6 @@ export const ProjectOneSection = () => {
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
