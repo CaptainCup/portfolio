@@ -156,7 +156,7 @@ export default function Home() {
 					${styles.sky} 
 					${isEnd ? 'touch-auto' : 'touch-none'} 
 					${isEnd ? 'flex-col' : 'flex-row'} 
-					pb-32 static flex items-end h-11/12 overflow-y-visible overflow-x-auto`}
+					pb-32 static flex items-end overflow-y-visible overflow-x-auto`}
 			>
 				{/* Обо мне */}
 				<section className='w-screen min-w-screen p-8'>
@@ -280,7 +280,7 @@ export default function Home() {
 					<Image src={animation[status]} width={128} height={128} alt='' />
 				</div>
 			</main>
-			<div ref={groundRef} className={`${styles.grass} w-screen h-1/12`} />
+			<div ref={groundRef} className={`${styles.grass} w-screen`} />
 		</div>
 	);
 }

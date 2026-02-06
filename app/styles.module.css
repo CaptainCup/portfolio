@@ -2,6 +2,10 @@
 	background: #68aadc;
 }
 
+.container {
+	height: calc(100% - 64px);
+}
+
 .container::-webkit-scrollbar {
 	display: none;
 }
@@ -9,8 +13,8 @@
 .character {
 	position: absolute;
 	right: 50%;
-	bottom: 0;
-	translate: 50% -40%;
+	top: 100%;
+	translate: 50% -160px;
 }
 
 .jump {
@@ -20,6 +24,7 @@
 .grass {
 	background: url('/grass.jpg');
 	background-size: 200px;
+	height: 64px;
 }
 
 .sky {

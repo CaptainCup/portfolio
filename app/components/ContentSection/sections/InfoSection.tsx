@@ -1,6 +1,6 @@
 import styles from '../styles.module.css';
 
-export const infoSectionBlocksCount = 1;
+export const infoSectionBlocksCount = 2;
 
 export const InfoSection = () => {
 	return (
@@ -30,14 +30,14 @@ export const InfoSection = () => {
 				</div>
 			</div>
 
-			<div className={styles['show-1']}>
+			<div className={styles['show-2']}>
 				<div className='flex flex-col gap-2'>
 					<h3>Учебное заведение</h3>
 					<p>Иркутский государственный университет путей сообщения</p>
 				</div>
 			</div>
 
-			<div className={styles['show-1']}>
+			<div className={styles['show-2']}>
 				<div className='flex flex-col gap-2'>
 					<h3>Часовой пояс</h3>
 					<p>GMT+8 (МСК+5) Иркутск</p>
