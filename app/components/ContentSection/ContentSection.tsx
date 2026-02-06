@@ -9,29 +9,10 @@ import {
 	skillsSectionBlocksCount,
 } from './sections/SkillsSection';
 import {
-	ProjectOneSection,
-	projectOneSectionBlocksCount,
-} from './sections/ProjectOneSection';
-import {
-	ProjectTwoSection,
-	projectTwoSectionBlocksCount,
-} from './sections/ProjectTwoSection';
-import {
-	ProjectThreeSection,
-	projectThreeSectionBlocksCount,
-} from './sections/ProjectThreeSection';
-import {
-	ProjectFourSection,
-	projectFourSectionBlocksCount,
-} from './sections/ProjectFourSection';
-import {
-	ProjectFiveSection,
-	projectFiveSectionBlocksCount,
-} from './sections/ProjectFiveSection';
-import {
-	ProjectSixSection,
-	projectSixSectionBlocksCount,
-} from './sections/ProjectSixSection';
+	SpheresSection,
+	spheresSectionBlocksCount,
+} from './sections/SpheresSection';
+import {TasksSection, tasksSectionBlocksCount} from './sections/TasksSection';
 import {
 	ContactsSection,
 	contactsSectionBlocksCount,
@@ -53,29 +34,13 @@ const sections: SectionInfo = {
 		content: <SkillsSection />,
 		blocksCount: skillsSectionBlocksCount,
 	},
-	projectOne: {
-		content: <ProjectOneSection />,
-		blocksCount: projectOneSectionBlocksCount,
+	spheres: {
+		content: <SpheresSection />,
+		blocksCount: spheresSectionBlocksCount,
 	},
-	projectTwo: {
-		content: <ProjectTwoSection />,
-		blocksCount: projectTwoSectionBlocksCount,
-	},
-	projectThree: {
-		content: <ProjectThreeSection />,
-		blocksCount: projectThreeSectionBlocksCount,
-	},
-	projectFour: {
-		content: <ProjectFourSection />,
-		blocksCount: projectFourSectionBlocksCount,
-	},
-	projectFive: {
-		content: <ProjectFiveSection />,
-		blocksCount: projectFiveSectionBlocksCount,
-	},
-	projectSix: {
-		content: <ProjectSixSection />,
-		blocksCount: projectSixSectionBlocksCount,
+	tasks: {
+		content: <TasksSection />,
+		blocksCount: tasksSectionBlocksCount,
 	},
 	contacts: {
 		content: <ContactsSection />,

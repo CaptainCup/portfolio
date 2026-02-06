@@ -48,28 +48,6 @@ export const SkillsSection = () => {
 				</div>
 			</div>
 
-			<div className={styles['show-1']}>
-				<div className='flex flex-col gap-2'>
-					<h3>Архитектура</h3>
-					<div className='flex flex-wrap gap-2'>
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Feature sliced design
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div className={styles['show-1']}>
-				<div className='flex flex-col gap-2'>
-					<h3>Microfrontend</h3>
-					<div className='flex flex-wrap gap-2'>
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Module federation (Webpack)
-						</div>
-					</div>
-				</div>
-			</div>
-
 			<div className={styles['show-2']}>
 				<div className='flex flex-col gap-2'>
 					<h3>Библиотеки компонентов</h3>
@@ -139,7 +117,7 @@ export const SkillsSection = () => {
 				</div>
 			</div>
 
-			<div className={styles['show-2']}>
+			<div className={styles['show-3']}>
 				<div className='flex flex-col gap-2'>
 					<h3>Стилизация</h3>
 					<div className='flex flex-wrap gap-2'>
@@ -194,98 +172,7 @@ export const SkillsSection = () => {
 			</div>
 
 			<div className={styles['show-3']}>
-				<div className='flex flex-col gap-2'>
-					<h3>Прочие инструменты</h3>
-					<div className='flex gap-2 flex-wrap justify-center'>
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Prettier
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							EsLint
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							GIT
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							JWT
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Apexcharts
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Recharts
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Leaflet.js
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Nest.js
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							PM2
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							D3.js
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							DHTMLX Gantt
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Jira
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Confluence
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Gitlab
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Docker
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							NodeJS
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							StoryBook
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Nginx
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							MongoDB
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Scrum
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							Agile
-						</div>
-
-						<div className='bg-black text-white border-2 rounded-2xl px-2'>
-							CI/CD
-						</div>
-					</div>
-				</div>
+				<h3>И много чего еще :)</h3>
 			</div>
 		</>
 	);

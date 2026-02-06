@@ -129,7 +129,7 @@ export default function Home() {
 				return;
 			}
 
-			const newPosition = containerEl.scrollLeft + delta * 0.7;
+			const newPosition = containerEl.scrollLeft + delta;
 
 			updatePosition(newPosition);
 		};
@@ -200,64 +200,24 @@ export default function Home() {
 					passSection={() => passSection('skills')}
 				/>
 
-				{/* Проект 1 */}
+				{/* Сферы */}
 				<ContentSection
-					sectionName={'projectOne'}
-					isClickable={reachedSections.includes('projectOne')}
+					sectionName={'spheres'}
+					isClickable={reachedSections.includes('spheres')}
 					initializeSection={buttonPosition =>
-						initializeSection('projectOne', buttonPosition)
+						initializeSection('spheres', buttonPosition)
 					}
-					passSection={() => passSection('projectOne')}
+					passSection={() => passSection('spheres')}
 				/>
 
-				{/* Проект 2 */}
+				{/* Задачи */}
 				<ContentSection
-					sectionName={'projectTwo'}
-					isClickable={reachedSections.includes('projectTwo')}
+					sectionName={'tasks'}
+					isClickable={reachedSections.includes('tasks')}
 					initializeSection={buttonPosition =>
-						initializeSection('projectTwo', buttonPosition)
+						initializeSection('tasks', buttonPosition)
 					}
-					passSection={() => passSection('projectTwo')}
-				/>
-
-				{/* Проект 3 */}
-				<ContentSection
-					sectionName={'projectThree'}
-					isClickable={reachedSections.includes('projectThree')}
-					initializeSection={buttonPosition =>
-						initializeSection('projectThree', buttonPosition)
-					}
-					passSection={() => passSection('projectThree')}
-				/>
-
-				{/* Проект 4 */}
-				<ContentSection
-					sectionName={'projectFour'}
-					isClickable={reachedSections.includes('projectFour')}
-					initializeSection={buttonPosition =>
-						initializeSection('projectFour', buttonPosition)
-					}
-					passSection={() => passSection('projectFour')}
-				/>
-
-				{/* Проект 5 */}
-				<ContentSection
-					sectionName={'projectFive'}
-					isClickable={reachedSections.includes('projectFive')}
-					initializeSection={buttonPosition =>
-						initializeSection('projectFive', buttonPosition)
-					}
-					passSection={() => passSection('projectFive')}
-				/>
-
-				{/* Проект 6 */}
-				<ContentSection
-					sectionName={'projectSix'}
-					isClickable={reachedSections.includes('projectSix')}
-					initializeSection={buttonPosition =>
-						initializeSection('projectSix', buttonPosition)
-					}
-					passSection={() => passSection('projectSix')}
+					passSection={() => passSection('tasks')}
 				/>
 
 				{/* Контакты */}
@@ -274,7 +234,6 @@ export default function Home() {
 				/>
 
 				<div
-					onClick={jump}
 					className={`${status === 'jump' && styles.jump} ${styles.character}`}
 				>
 					<Image src={animation[status]} width={128} height={128} alt='' />
