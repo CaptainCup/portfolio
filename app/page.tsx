@@ -159,8 +159,8 @@ export default function Home() {
 					pb-32 static flex items-end overflow-y-visible overflow-x-auto`}
 			>
 				{/* Обо мне */}
-				<section className='w-screen min-w-screen p-8'>
-					<div className='flex flex-col gap-8 w-full h-full border-4 rounded-4xl p-8 lg:p-12 border-black bg-white'>
+				<section className='w-screen min-w-screen p-8 flex flex-col items-center'>
+					<div className='flex flex-col gap-8 w-full h-full border-4 max-w-5xl rounded-4xl p-8 lg:p-12 border-black bg-white'>
 						<h2 className='text-2xl'>👋 Привет, я</h2>
 
 						<div className='flex flex-col lg:flex-row items-center gap-8'>
