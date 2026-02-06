@@ -203,7 +203,7 @@ export default function Home() {
 				{/* Проект 1 */}
 				<ContentSection
 					sectionName={'projectOne'}
-					isClickable={reachedSections.includes('info')}
+					isClickable={reachedSections.includes('projectOne')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectOne', buttonPosition)
 					}
@@ -213,7 +213,7 @@ export default function Home() {
 				{/* Проект 2 */}
 				<ContentSection
 					sectionName={'projectTwo'}
-					isClickable={reachedSections.includes('info')}
+					isClickable={reachedSections.includes('projectTwo')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectTwo', buttonPosition)
 					}
@@ -223,7 +223,7 @@ export default function Home() {
 				{/* Проект 3 */}
 				<ContentSection
 					sectionName={'projectThree'}
-					isClickable={reachedSections.includes('info')}
+					isClickable={reachedSections.includes('projectThree')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectThree', buttonPosition)
 					}
@@ -233,7 +233,7 @@ export default function Home() {
 				{/* Проект 4 */}
 				<ContentSection
 					sectionName={'projectFour'}
-					isClickable={reachedSections.includes('info')}
+					isClickable={reachedSections.includes('projectFour')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectFour', buttonPosition)
 					}
@@ -243,7 +243,7 @@ export default function Home() {
 				{/* Проект 5 */}
 				<ContentSection
 					sectionName={'projectFive'}
-					isClickable={reachedSections.includes('info')}
+					isClickable={reachedSections.includes('projectFive')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectFive', buttonPosition)
 					}
@@ -253,7 +253,7 @@ export default function Home() {
 				{/* Проект 6 */}
 				<ContentSection
 					sectionName={'projectSix'}
-					isClickable={reachedSections.includes('info')}
+					isClickable={reachedSections.includes('projectSix')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectSix', buttonPosition)
 					}
@@ -263,7 +263,7 @@ export default function Home() {
 				{/* Контакты */}
 				<ContentSection
 					sectionName={'contacts'}
-					isClickable={reachedSections.includes('info')}
+					isClickable={reachedSections.includes('contacts')}
 					initializeSection={buttonPosition =>
 						initializeSection('contacts', buttonPosition)
 					}
