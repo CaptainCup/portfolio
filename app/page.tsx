@@ -24,11 +24,12 @@ export default function Home() {
 	const [status, setStatus] = useState<keyof typeof animation>('idle');
 	const walkingTimeout = useRef<ReturnType<typeof setTimeout>>(null);
 
-	const ref = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const groundRef = useRef<HTMLDivElement>(null);
 
 	const toggleEnd = () => {
 		setIsEnd(draft => !draft);
-		const el = ref.current;
+		const el = containerRef.current;
 		if (!el) return;
 
 		setTimeout(() => {
@@ -76,22 +77,18 @@ export default function Home() {
 	};
 
 	useEffect(() => {
-		const el = ref.current;
-		if (!el) return;
+		const containerEl = containerRef.current;
+		const groundEl = groundRef.current;
+		if (!containerEl || !groundEl) return;
 
 		const nextStopIndex = sections.findIndex(({passed}) => !passed);
 		const nextStop = sections[nextStopIndex];
-		const {width} = el.getBoundingClientRect();
+		const {width} = containerEl.getBoundingClientRect();
+		let startX = 0;
 
-		const onWheel = (e: WheelEvent) => {
-			e.preventDefault();
-
-			const delta = Math.abs(e.deltaY);
-
-			const newPosition = el.scrollLeft + delta * 0.6;
-
+		const updatePosition = (newPosition: number) => {
 			if (nextStop && nextStop.buttonPosition - width / 2 < newPosition) {
-				el.scrollLeft = nextStop.buttonPosition - width / 2;
+				containerEl.scrollLeft = nextStop.buttonPosition - width / 2;
 				setReachedSections(draft => [...draft, nextStop.sectionName]);
 				return;
 			}
@@ -103,10 +100,19 @@ export default function Home() {
 			setStatus('walk');
 
 			walkingTimeout.current = setTimeout(() => setStatus('idle'), 300);
-			el.scrollLeft = newPosition;
+			containerEl.scrollLeft = newPosition;
+			groundEl.style.backgroundPositionX = `-${newPosition * 0.7}px`;
 		};
 
-		let startX = 0;
+		const onWheel = (e: WheelEvent) => {
+			e.preventDefault();
+
+			const delta = Math.abs(e.deltaY);
+
+			const newPosition = containerEl.scrollLeft + delta * 0.6;
+
+			updatePosition(newPosition);
+		};
 
 		const onDown = (e: TouchEvent) => {
 			startX = e.touches[0].clientX;
@@ -123,41 +129,28 @@ export default function Home() {
 				return;
 			}
 
-			const newPosition = el.scrollLeft + delta * 0.7;
+			const newPosition = containerEl.scrollLeft + delta * 0.7;
 
-			if (nextStop && nextStop.buttonPosition - width / 2 < newPosition) {
-				el.scrollLeft = nextStop.buttonPosition - width / 2;
-				setReachedSections(draft => [...draft, nextStop.sectionName]);
-				return;
-			}
-
-			if (walkingTimeout.current) {
-				clearTimeout(walkingTimeout.current);
-			}
-
-			setStatus('walk');
-
-			walkingTimeout.current = setTimeout(() => setStatus('idle'), 300);
-			el.scrollLeft = newPosition;
+			updatePosition(newPosition);
 		};
 
 		if (!isEnd && status !== 'jump') {
-			el.addEventListener('wheel', onWheel, {passive: false});
-			el.addEventListener('touchstart', onDown);
-			el.addEventListener('touchmove', onMove);
+			containerEl.addEventListener('wheel', onWheel, {passive: false});
+			containerEl.addEventListener('touchstart', onDown);
+			containerEl.addEventListener('touchmove', onMove);
 		}
 
 		return () => {
-			el.removeEventListener('wheel', onWheel);
-			el.removeEventListener('touchstart', onDown);
-			el.removeEventListener('touchmove', onMove);
+			containerEl.removeEventListener('wheel', onWheel);
+			containerEl.removeEventListener('touchstart', onDown);
+			containerEl.removeEventListener('touchmove', onMove);
 		};
 	}, [sections, isEnd, status]);
 
 	return (
-		<div className={`${styles.body} h-screen `}>
+		<div className={`${styles.body} h-screen`}>
 			<main
-				ref={ref}
+				ref={containerRef}
 				className={`
 					${styles.container} 
 					${styles.sky} 
@@ -218,59 +211,54 @@ export default function Home() {
 				/>
 
 				{/* Проект 2 */}
-				{/* <ContentSection
+				<ContentSection
 					sectionName={'projectTwo'}
 					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectTwo', buttonPosition)
 					}
-					
 					passSection={() => passSection('projectTwo')}
-				/> */}
+				/>
 
 				{/* Проект 3 */}
-				{/* <ContentSection
+				<ContentSection
 					sectionName={'projectThree'}
 					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectThree', buttonPosition)
 					}
-					
 					passSection={() => passSection('projectThree')}
-				/> */}
+				/>
 
 				{/* Проект 4 */}
-				{/* <ContentSection
+				<ContentSection
 					sectionName={'projectFour'}
 					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectFour', buttonPosition)
 					}
-					
 					passSection={() => passSection('projectFour')}
-				/> */}
+				/>
 
 				{/* Проект 5 */}
-				{/* <ContentSection
+				<ContentSection
 					sectionName={'projectFive'}
 					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectFive', buttonPosition)
 					}
-					
 					passSection={() => passSection('projectFive')}
-				/> */}
+				/>
 
 				{/* Проект 6 */}
-				{/* <ContentSection
+				<ContentSection
 					sectionName={'projectSix'}
 					isClickable={reachedSections.includes('info')}
 					initializeSection={buttonPosition =>
 						initializeSection('projectSix', buttonPosition)
 					}
-					
 					passSection={() => passSection('projectSix')}
-				/> */}
+				/>
 
 				{/* Контакты */}
 				<ContentSection
@@ -292,7 +280,7 @@ export default function Home() {
 					<Image src={animation[status]} width={128} height={128} alt='' />
 				</div>
 			</main>
-			<div className={`${styles.grass} w-screen h-1/12`} />
+			<div ref={groundRef} className={`${styles.grass} w-screen h-1/12`} />
 		</div>
 	);
 }

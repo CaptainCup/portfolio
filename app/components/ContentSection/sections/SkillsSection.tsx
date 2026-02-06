@@ -1,6 +1,6 @@
 import styles from '../styles.module.css';
 
-export const skillsSectionBlocksCount = 2;
+export const skillsSectionBlocksCount = 3;
 
 export const SkillsSection = () => {
 	return (
@@ -70,7 +70,7 @@ export const SkillsSection = () => {
 				</div>
 			</div>
 
-			<div className={styles['show-1']}>
+			<div className={styles['show-2']}>
 				<div className='flex flex-col gap-2'>
 					<h3>Библиотеки компонентов</h3>
 					<div className='flex flex-wrap gap-2'>
@@ -170,7 +170,7 @@ export const SkillsSection = () => {
 				</div>
 			</div>
 
-			<div className={styles['show-2']}>
+			<div className={styles['show-3']}>
 				<div className='flex flex-col gap-2'>
 					<h3>Тестирование</h3>
 					<div className='flex flex-wrap gap-2'>
@@ -193,7 +193,7 @@ export const SkillsSection = () => {
 				</div>
 			</div>
 
-			<div className={styles['show-2']}>
+			<div className={styles['show-3']}>
 				<div className='flex flex-col gap-2'>
 					<h3>Прочие инструменты</h3>
 					<div className='flex gap-2 flex-wrap justify-center'>
