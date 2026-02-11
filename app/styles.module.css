@@ -3,6 +3,7 @@
 }
 
 .container {
+	display: block;
 	height: calc(100% - 64px);
 }
 
@@ -10,15 +11,17 @@
 	display: none;
 }
 
-.character {
-	position: absolute;
-	right: 50%;
-	top: 100%;
-	translate: 50% -160px;
+.background {
+	display: block;
 }
 
-.jump {
-	animation: jump 2s;
+.character {
+	position: absolute;
+	bottom: 30px;
+}
+
+.back {
+	scale: -1 1;
 }
 
 .grass {
@@ -33,26 +36,4 @@
 	background-repeat: repeat-x;
 	background-position: bottom;
 	background-attachment: local;
-}
-
-@keyframes jump {
-	0% {
-		translate: 50% -40%;
-	}
-
-	30% {
-		translate: 50% -40%;
-	}
-
-	60% {
-		translate: 50% -65%;
-	}
-
-	80% {
-		translate: 50% -40%;
-	}
-
-	100% {
-		translate: 50% -40%;
-	}
 }

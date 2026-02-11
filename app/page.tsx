@@ -1,245 +1,251 @@
 'use client';
 
 import Image from 'next/image';
-import ContentSection from './components/ContentSection';
-import {useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import styles from './styles.module.css';
+import Point from './components/Point/Point';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
+import {PointRef} from './components/Point/types';
 
-type SectionInfo = {
-	sectionName: string;
-	buttonPosition: number;
-	passed: boolean;
-};
+const SCROLL_CONTAINER_WIDTH = 2000;
 
 const animation = {
 	idle: '/idle.gif',
 	walk: '/walking.gif',
-	jump: '/jump.gif',
 };
 
-export default function Home() {
-	const [sections, setSections] = useState<SectionInfo[]>([]);
-	const [isEnd, setIsEnd] = useState(false);
-	const [reachedSections, setReachedSections] = useState<string[]>([]);
-	const [status, setStatus] = useState<keyof typeof animation>('idle');
-	const walkingTimeout = useRef<ReturnType<typeof setTimeout>>(null);
+const POINTS = [
+	{
+		name: 'mirror',
+		position: 400,
+	},
 
+	{
+		name: 'mirror',
+		position: 800,
+	},
+];
+
+export default function Home() {
+	'use no memo';
+
+	const [status, setStatus] = useState<keyof typeof animation>('idle');
+	const [direction, setDirection] = useState('forward');
+	const [activePoint, setActivePoint] = useState('');
+	const [isInteract, setIsInteract] = useState(false);
+
+	const walkingTimeout = useRef<ReturnType<typeof setTimeout>>(null);
+	const moveButtonIntervalRef = useRef<ReturnType<typeof setInterval>>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const groundRef = useRef<HTMLDivElement>(null);
+	const characterRef = useRef<HTMLDivElement>(null);
+	const distanceWithoutScroll = useRef<number>(0);
+	const characterPosition = useRef<number>(0);
+	const pointsRef = useRef<{[pointName: string]: PointRef}>({});
 
-	const toggleEnd = () => {
-		setIsEnd(draft => !draft);
-		const el = containerRef.current;
-		if (!el) return;
-
-		setTimeout(() => {
-			el.scrollTop = el.scrollHeight;
-		}, 0);
+	const createPointRef = (pointName: string) => (el: PointRef) => {
+		pointsRef.current[pointName] = el;
 	};
 
-	const initializeSection = (sectionName: string, buttonPosition: number) => {
-		setSections(draft => [
-			...draft,
-			{
-				sectionName,
-				buttonPosition,
-				passed: false,
-			},
-		]);
-	};
+	const moveCharacter = useCallback(
+		(direction: string, delta: number) => {
+			const characterEl = characterRef.current;
+			const containerEl = containerRef.current;
+			const groundEl = groundRef.current;
+			const noScrollDistance = distanceWithoutScroll.current;
 
-	const passSection = (sectionName: string) => {
-		setSections(draft => {
-			const sectionIndex = draft.findIndex(
-				section => section.sectionName === sectionName,
-			);
+			if (!containerEl || !groundEl || !characterEl) return;
 
-			if (sectionIndex !== -1) {
-				return [
-					...draft.slice(0, sectionIndex),
-					{...draft[sectionIndex], passed: true},
-					...draft.slice(sectionIndex + 1),
-				];
+			const calcPosition =
+				direction === 'back'
+					? characterPosition.current - delta
+					: characterPosition.current + delta;
+
+			if (calcPosition < 0) {
+				characterPosition.current = 0;
+			} else if (calcPosition > SCROLL_CONTAINER_WIDTH) {
+				characterPosition.current = SCROLL_CONTAINER_WIDTH;
+			} else {
+				characterPosition.current = calcPosition;
 			}
 
-			return draft;
-		});
+			const newPosition = characterPosition.current;
+
+			if (newPosition < noScrollDistance) {
+				characterEl.style.left = `${newPosition}px`;
+			}
+			if (newPosition > SCROLL_CONTAINER_WIDTH - noScrollDistance) {
+				characterEl.style.left = `${newPosition + noScrollDistance * 2 - SCROLL_CONTAINER_WIDTH}px`;
+			} else {
+				const newScrollPosition = newPosition - noScrollDistance;
+
+				containerEl.scrollLeft = newScrollPosition;
+				groundEl.style.backgroundPositionX = `-${newScrollPosition * 0.7}px`;
+			}
+
+			if (newPosition !== 0 && newPosition !== SCROLL_CONTAINER_WIDTH) {
+				if (walkingTimeout.current) {
+					clearTimeout(walkingTimeout.current);
+				}
+
+				setStatus('walk');
+				setDirection(direction);
+
+				walkingTimeout.current = setTimeout(() => setStatus('idle'), 300);
+			}
+
+			const closePoint = POINTS.find(
+				({position}) =>
+					newPosition > position - 100 && newPosition < position + 20,
+			);
+
+			if (!closePoint && activePoint) {
+				setActivePoint('');
+			}
+
+			if (closePoint && activePoint !== closePoint.name) {
+				setActivePoint(closePoint.name);
+			}
+		},
+		[activePoint],
+	);
+
+	const moveCharacterByKeyboard = useCallback(
+		(event: KeyboardEvent) => {
+			const delta = 12;
+			const {key} = event;
+
+			if (key === 'ArrowLeft' || key === 'a' || key === 'ф') {
+				event.preventDefault();
+				moveCharacter('back', delta);
+			}
+
+			if (key === 'ArrowRight' || key === 'd' || key === 'в') {
+				event.preventDefault();
+				moveCharacter('forward', delta);
+			}
+		},
+		[moveCharacter],
+	);
+
+	const interactWithPoint = useCallback(() => {
+		if (activePoint) {
+			isInteract
+				? pointsRef.current[activePoint]?.cancel()
+				: pointsRef.current[activePoint]?.interact();
+		}
+	}, [activePoint, isInteract]);
+
+	const interactWithPointByKeyboard = useCallback(
+		(event: KeyboardEvent) => {
+			const {key} = event;
+
+			if (key === 'e' || key === 'у') {
+				event.preventDefault();
+				interactWithPoint();
+			}
+		},
+		[interactWithPoint],
+	);
+
+	const moveCharacterByButton = (direction: string) => {
+		moveButtonIntervalRef.current = setInterval(() => {
+			moveCharacter(direction, 8);
+		}, 20);
 	};
 
-	const jump = () => {
-		if (walkingTimeout.current) {
-			clearTimeout(walkingTimeout.current);
+	const stopMoveCharacterByButton = () => {
+		if (moveButtonIntervalRef.current) {
+			clearInterval(moveButtonIntervalRef.current);
 		}
-
-		setStatus('jump');
-
-		walkingTimeout.current = setTimeout(() => setStatus('idle'), 2000);
 	};
 
 	useEffect(() => {
-		const containerEl = containerRef.current;
-		const groundEl = groundRef.current;
-		if (!containerEl || !groundEl) return;
+		const width = characterRef?.current?.getBoundingClientRect().width || 0;
 
-		const nextStopIndex = sections.findIndex(({passed}) => !passed);
-		const nextStop = sections[nextStopIndex];
-		const {width} = containerEl.getBoundingClientRect();
-		let startX = 0;
+		distanceWithoutScroll.current = (window.innerWidth - width) / 2;
 
-		const updatePosition = (newPosition: number) => {
-			if (nextStop && nextStop.buttonPosition - width / 2 < newPosition) {
-				containerEl.scrollLeft = nextStop.buttonPosition - width / 2;
-				setReachedSections(draft => [...draft, nextStop.sectionName]);
-				return;
-			}
-
-			if (walkingTimeout.current) {
-				clearTimeout(walkingTimeout.current);
-			}
-
-			setStatus('walk');
-
-			walkingTimeout.current = setTimeout(() => setStatus('idle'), 300);
-			containerEl.scrollLeft = newPosition;
-			groundEl.style.backgroundPositionX = `-${newPosition * 0.7}px`;
-		};
-
-		const onWheel = (e: WheelEvent) => {
-			e.preventDefault();
-
-			const delta = Math.abs(e.deltaY);
-
-			const newPosition = containerEl.scrollLeft + delta * 0.6;
-
-			updatePosition(newPosition);
-		};
-
-		const onDown = (e: TouchEvent) => {
-			startX = e.touches[0].clientX;
-		};
-
-		const onMove = (e: TouchEvent) => {
-			e.preventDefault();
-
-			const delta = startX - e.touches[0].clientX;
-
-			startX = e.touches[0].clientX;
-
-			if (delta < 0 || !nextStop) {
-				return;
-			}
-
-			const newPosition = containerEl.scrollLeft + delta;
-
-			updatePosition(newPosition);
-		};
-
-		if (!isEnd && status !== 'jump') {
-			containerEl.addEventListener('wheel', onWheel, {passive: false});
-			containerEl.addEventListener('touchstart', onDown);
-			containerEl.addEventListener('touchmove', onMove);
+		if (!isInteract) {
+			window.addEventListener('keydown', moveCharacterByKeyboard);
 		}
 
 		return () => {
-			containerEl.removeEventListener('wheel', onWheel);
-			containerEl.removeEventListener('touchstart', onDown);
-			containerEl.removeEventListener('touchmove', onMove);
+			if (!isInteract) {
+				window.removeEventListener('keydown', moveCharacterByKeyboard);
+			}
 		};
-	}, [sections, isEnd, status]);
+	}, [moveCharacterByKeyboard, isInteract]);
+
+	useEffect(() => {
+		window.addEventListener('keydown', interactWithPointByKeyboard);
+
+		return () => {
+			window.removeEventListener('keydown', interactWithPointByKeyboard);
+		};
+	}, [interactWithPointByKeyboard]);
 
 	return (
 		<div className={`${styles.body} h-screen`}>
 			<main
 				ref={containerRef}
 				className={`
-					${styles.container} 
-					${styles.sky} 
-					${isEnd ? 'touch-auto' : 'touch-none'} 
-					${isEnd ? 'flex-col' : 'flex-row'} 
-					pb-32 static flex items-end overflow-y-visible overflow-x-auto`}
+					${styles.container}
+					touch-none
+					overflow-y-hidden overflow-x-auto`}
 			>
-				{/* Обо мне */}
-				<section className='w-screen min-w-screen p-8 flex flex-col items-center'>
-					<div className='flex flex-col gap-8 w-full h-full border-4 max-w-5xl rounded-4xl p-8 lg:p-12 border-black bg-white'>
-						<h2 className='text-2xl'>👋 Привет, я</h2>
-
-						<div className='flex flex-col lg:flex-row items-center gap-8'>
-							<div className='rounded-full overflow-hidden'>
-								<Image
-									src='/profile.jpg'
-									width={128}
-									height={128}
-									alt='Красавчик'
-								/>
-							</div>
-							<div>
-								<p className='text-2xl lg:text-4xl'>Гаврилов Илья Юрьевич</p>
-								<p className='text-xl'>Frontend Developer</p>
-							</div>
-						</div>
-					</div>
-				</section>
-
-				{/* Информация */}
-				<ContentSection
-					sectionName={'info'}
-					isClickable={reachedSections.includes('info')}
-					initializeSection={buttonPosition =>
-						initializeSection('info', buttonPosition)
-					}
-					passSection={() => passSection('info')}
-				/>
-
-				{/* Навыки */}
-				<ContentSection
-					sectionName={'skills'}
-					isClickable={reachedSections.includes('skills')}
-					initializeSection={buttonPosition =>
-						initializeSection('skills', buttonPosition)
-					}
-					passSection={() => passSection('skills')}
-				/>
-
-				{/* Сферы */}
-				<ContentSection
-					sectionName={'spheres'}
-					isClickable={reachedSections.includes('spheres')}
-					initializeSection={buttonPosition =>
-						initializeSection('spheres', buttonPosition)
-					}
-					passSection={() => passSection('spheres')}
-				/>
-
-				{/* Задачи */}
-				<ContentSection
-					sectionName={'tasks'}
-					isClickable={reachedSections.includes('tasks')}
-					initializeSection={buttonPosition =>
-						initializeSection('tasks', buttonPosition)
-					}
-					passSection={() => passSection('tasks')}
-				/>
-
-				{/* Контакты */}
-				<ContentSection
-					sectionName={'contacts'}
-					isClickable={reachedSections.includes('contacts')}
-					initializeSection={buttonPosition =>
-						initializeSection('contacts', buttonPosition)
-					}
-					passSection={() => {
-						toggleEnd();
-						passSection('contacts');
-					}}
-				/>
-
+				{/* Местность */}
 				<div
-					className={`${status === 'jump' && styles.jump} ${styles.character}`}
+					className={`relative ${styles.background} ${styles.sky} h-full`}
+					style={{width: `${SCROLL_CONTAINER_WIDTH}px`}}
+				>
+					{POINTS.map(point => (
+						<Point
+							key={point.position}
+							isActive={activePoint === point.name}
+							toggleInteract={() => setIsInteract(draft => !draft)}
+							ref={createPointRef(point.name)}
+							{...point}
+						/>
+					))}
+				</div>
+
+				{/* Персонаж */}
+				<div
+					ref={characterRef}
+					className={`${styles.character} ${direction === 'back' && styles.back}`}
 				>
 					<Image src={animation[status]} width={128} height={128} alt='' />
 				</div>
 			</main>
 			<div ref={groundRef} className={`${styles.grass} w-screen`} />
+
+			{/* Кнопки управления */}
+			<div className='absolute left-1/2 bottom-0 '>
+				<div className='flex gap-8 -translate-x-1/2 -translate-y-2'>
+					<button
+						onPointerDown={() => moveCharacterByButton('back')}
+						onPointerUp={stopMoveCharacterByButton}
+						className='opacity-70 py-2 px-4 rounded-xl bg-black text-white'
+					>
+						<ArrowBackIosNewIcon />
+					</button>
+					<button
+						onPointerDown={interactWithPoint}
+						className={`${activePoint ? 'opacity-70' : 'opacity-50 '}  py-2 px-4 rounded-xl bg-black text-white`}
+					>
+						<LocalPizzaIcon />
+					</button>
+					<button
+						onPointerDown={() => moveCharacterByButton('forward')}
+						onPointerUp={stopMoveCharacterByButton}
+						className='opacity-70 py-2 px-4 rounded-xl bg-black text-white'
+					>
+						<ArrowForwardIosIcon />
+					</button>
+				</div>
+			</div>
 		</div>
 	);
 }

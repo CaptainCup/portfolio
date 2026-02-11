@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: 'Илья Г. | Frontend Developer',
-	description: 'Гаврилов Илья Юрьевич. Frontend Developer. Сайт-визитка.',
+	description: 'Гаврилов Илья Юрьевич. Frontend Developer.',
 };
 
 export default function RootLayout({
