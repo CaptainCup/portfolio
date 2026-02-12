@@ -4,9 +4,6 @@ import Image from 'next/image';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import styles from './styles.module.css';
 import Point from './components/Point/Point';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
 import {PointRef} from './components/Point/types';
 
 const SCROLL_CONTAINER_WIDTH = 2000;
@@ -38,9 +35,12 @@ export default function Home() {
 
 	const walkingTimeout = useRef<ReturnType<typeof setTimeout>>(null);
 	const moveButtonIntervalRef = useRef<ReturnType<typeof setInterval>>(null);
+
 	const containerRef = useRef<HTMLDivElement>(null);
 	const groundRef = useRef<HTMLDivElement>(null);
 	const characterRef = useRef<HTMLDivElement>(null);
+	const screenRef = useRef<HTMLDivElement>(null);
+
 	const distanceWithoutScroll = useRef<number>(0);
 	const characterPosition = useRef<number>(0);
 	const pointsRef = useRef<{[pointName: string]: PointRef}>({});
@@ -114,7 +114,7 @@ export default function Home() {
 
 	const moveCharacterByKeyboard = useCallback(
 		(event: KeyboardEvent) => {
-			const delta = 12;
+			const delta = 10;
 			const {key} = event;
 
 			if (key === 'ArrowLeft' || key === 'a' || key === 'ф') {
@@ -152,7 +152,7 @@ export default function Home() {
 
 	const moveCharacterByButton = (direction: string) => {
 		moveButtonIntervalRef.current = setInterval(() => {
-			moveCharacter(direction, 8);
+			moveCharacter(direction, 7);
 		}, 20);
 	};
 
@@ -163,9 +163,11 @@ export default function Home() {
 	};
 
 	useEffect(() => {
-		const width = characterRef?.current?.getBoundingClientRect().width || 0;
+		const characterWidth =
+			characterRef?.current?.getBoundingClientRect().width || 0;
+		const screenWidth = screenRef?.current?.getBoundingClientRect().width || 0;
 
-		distanceWithoutScroll.current = (window.innerWidth - width) / 2;
+		distanceWithoutScroll.current = (screenWidth - characterWidth) / 2;
 
 		if (!isInteract) {
 			window.addEventListener('keydown', moveCharacterByKeyboard);
@@ -187,63 +189,86 @@ export default function Home() {
 	}, [interactWithPointByKeyboard]);
 
 	return (
-		<div className={`${styles.body} h-screen`}>
-			<main
-				ref={containerRef}
-				className={`
-					${styles.container}
-					touch-none
-					overflow-y-hidden overflow-x-auto`}
+		<div className={`h-dvh flex items-center justify-center bg-gray-800`}>
+			<div
+				className={`w-full sm:w-xl h-full sm:h-[52rem] bg-gray-400 p-6 sm:p-16 sm:rounded-4xl shadow-xl/30 shadow-black`}
 			>
-				{/* Местность */}
 				<div
-					className={`relative ${styles.background} ${styles.sky} h-full`}
-					style={{width: `${SCROLL_CONTAINER_WIDTH}px`}}
+					ref={screenRef}
+					className={`${styles.screen} rounded-4xl overflow-hidden`}
 				>
-					{POINTS.map(point => (
-						<Point
-							key={point.position}
-							isActive={activePoint === point.name}
-							toggleInteract={() => setIsInteract(draft => !draft)}
-							ref={createPointRef(point.name)}
-							{...point}
+					<main
+						ref={containerRef}
+						className={`${styles.container} max-w-full touch-none overflow-y-hidden overflow-x-auto`}
+					>
+						{/* Местность */}
+						<div
+							className={`relative ${styles.background} ${styles.sky} h-full`}
+							style={{width: `${SCROLL_CONTAINER_WIDTH}px`}}
+						>
+							{POINTS.map(point => (
+								<Point
+									key={point.position}
+									isActive={activePoint === point.name}
+									toggleInteract={() => setIsInteract(draft => !draft)}
+									ref={createPointRef(point.name)}
+									{...point}
+								/>
+							))}
+						</div>
+
+						{/* Персонаж */}
+						<div
+							ref={characterRef}
+							className={`${styles.character} ${direction === 'back' && styles.back}`}
+						>
+							<Image src={animation[status]} width={100} height={100} alt='' />
+						</div>
+					</main>
+					<div ref={groundRef} className={`${styles.grass}`} />
+				</div>
+
+				{/* Кнопки управления */}
+				<div className='flex justify-between mt-16'>
+					<div className='grid grid-cols-3 grid-rows-3'>
+						<div />
+						<button className='rounded-t-xl h-12 w-12 bg-gray-800 text-white' />
+						<div />
+
+						<button
+							onPointerDown={() => moveCharacterByButton('back')}
+							onPointerUp={stopMoveCharacterByButton}
+							className='h-12 w-12 rounded-l-xl bg-gray-800 text-white'
 						/>
-					))}
-				</div>
+						<div className='h-12 w-12 bg-gray-800 text-white' />
+						<button
+							onPointerDown={() => moveCharacterByButton('forward')}
+							onPointerUp={stopMoveCharacterByButton}
+							className='h-12 w-12 rounded-r-xl bg-gray-800 text-white'
+						/>
 
-				{/* Персонаж */}
-				<div
-					ref={characterRef}
-					className={`${styles.character} ${direction === 'back' && styles.back}`}
-				>
-					<Image src={animation[status]} width={128} height={128} alt='' />
-				</div>
-			</main>
-			<div ref={groundRef} className={`${styles.grass} w-screen`} />
+						<div />
+						<button className='rounded-b-xl h-12 w-12 bg-gray-800 text-white' />
+						<div />
+					</div>
 
-			{/* Кнопки управления */}
-			<div className='absolute left-1/2 bottom-0 '>
-				<div className='flex gap-8 -translate-x-1/2 -translate-y-2'>
-					<button
-						onPointerDown={() => moveCharacterByButton('back')}
-						onPointerUp={stopMoveCharacterByButton}
-						className='opacity-70 py-2 px-4 rounded-xl bg-black text-white'
-					>
-						<ArrowBackIosNewIcon />
-					</button>
-					<button
-						onPointerDown={interactWithPoint}
-						className={`${activePoint ? 'opacity-70' : 'opacity-50 '}  py-2 px-4 rounded-xl bg-black text-white`}
-					>
-						<LocalPizzaIcon />
-					</button>
-					<button
-						onPointerDown={() => moveCharacterByButton('forward')}
-						onPointerUp={stopMoveCharacterByButton}
-						className='opacity-70 py-2 px-4 rounded-xl bg-black text-white'
-					>
-						<ArrowForwardIosIcon />
-					</button>
+					<div className='flex items-center gap-6'>
+						<div className='translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
+							<button
+								onPointerDown={interactWithPoint}
+								className={`h-12 w-12 rounded-full bg-pink-600`}
+							/>
+							<p className='text-2xl text-blue-800'>B</p>
+						</div>
+
+						<div className='-translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
+							<button
+								onPointerDown={interactWithPoint}
+								className={`h-12 w-12 rounded-full bg-pink-600`}
+							/>
+							<p className='text-2xl text-blue-800'>A</p>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

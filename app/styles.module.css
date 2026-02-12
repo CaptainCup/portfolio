@@ -1,5 +1,6 @@
-.body {
-	background: #68aadc;
+.screen {
+	position: relative;
+	height: 400px;
 }
 
 .container {
