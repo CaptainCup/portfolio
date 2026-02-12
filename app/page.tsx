@@ -4,7 +4,15 @@ import Image from 'next/image';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import styles from './styles.module.css';
 import Point from './components/Point/Point';
-import {PointRef} from './components/Point/types';
+import StatsModal from './components/StatsModal/StatsModal';
+import UtilsModal from './components/UtilsModal/UtilsModal';
+
+type PointInfo = {
+	name: string;
+	position: number;
+	text: string;
+	pages: number;
+};
 
 const SCROLL_CONTAINER_WIDTH = 2000;
 
@@ -16,12 +24,16 @@ const animation = {
 const POINTS = [
 	{
 		name: 'mirror',
-		position: 400,
+		position: 320,
+		text: 'Посмотреть на зеркало',
+		pages: 0,
 	},
 
 	{
-		name: 'mirror',
-		position: 800,
+		name: 'board',
+		position: 820,
+		text: 'Посмотреть на доску',
+		pages: 3,
 	},
 ];
 
@@ -30,33 +42,27 @@ export default function Home() {
 
 	const [status, setStatus] = useState<keyof typeof animation>('idle');
 	const [direction, setDirection] = useState('forward');
-	const [activePoint, setActivePoint] = useState('');
-	const [isInteract, setIsInteract] = useState(false);
+	const [activePoint, setActivePoint] = useState<PointInfo | null>(null);
+	const [openedPoint, setOpenedPoint] = useState<PointInfo | null>(null);
+	const [page, setPage] = useState(1);
 
 	const walkingTimeout = useRef<ReturnType<typeof setTimeout>>(null);
 	const moveButtonIntervalRef = useRef<ReturnType<typeof setInterval>>(null);
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const groundRef = useRef<HTMLDivElement>(null);
 	const characterRef = useRef<HTMLDivElement>(null);
 	const screenRef = useRef<HTMLDivElement>(null);
 
 	const distanceWithoutScroll = useRef<number>(0);
 	const characterPosition = useRef<number>(0);
-	const pointsRef = useRef<{[pointName: string]: PointRef}>({});
-
-	const createPointRef = (pointName: string) => (el: PointRef) => {
-		pointsRef.current[pointName] = el;
-	};
 
 	const moveCharacter = useCallback(
 		(direction: string, delta: number) => {
 			const characterEl = characterRef.current;
 			const containerEl = containerRef.current;
-			const groundEl = groundRef.current;
 			const noScrollDistance = distanceWithoutScroll.current;
 
-			if (!containerEl || !groundEl || !characterEl) return;
+			if (!containerEl || !characterEl) return;
 
 			const calcPosition =
 				direction === 'back'
@@ -82,7 +88,6 @@ export default function Home() {
 				const newScrollPosition = newPosition - noScrollDistance;
 
 				containerEl.scrollLeft = newScrollPosition;
-				groundEl.style.backgroundPositionX = `-${newScrollPosition * 0.7}px`;
 			}
 
 			if (newPosition !== 0 && newPosition !== SCROLL_CONTAINER_WIDTH) {
@@ -102,11 +107,11 @@ export default function Home() {
 			);
 
 			if (!closePoint && activePoint) {
-				setActivePoint('');
+				setActivePoint(null);
 			}
 
-			if (closePoint && activePoint !== closePoint.name) {
-				setActivePoint(closePoint.name);
+			if (closePoint && activePoint?.name !== closePoint.name) {
+				setActivePoint(closePoint);
 			}
 		},
 		[activePoint],
@@ -131,23 +136,42 @@ export default function Home() {
 	);
 
 	const interactWithPoint = useCallback(() => {
-		if (activePoint) {
-			isInteract
-				? pointsRef.current[activePoint]?.cancel()
-				: pointsRef.current[activePoint]?.interact();
+		if (activePoint && !openedPoint) {
+			setOpenedPoint({...activePoint});
 		}
-	}, [activePoint, isInteract]);
+
+		if (openedPoint && openedPoint.pages && openedPoint.pages > page) {
+			setPage(page + 1);
+		}
+	}, [activePoint, openedPoint, page]);
 
 	const interactWithPointByKeyboard = useCallback(
 		(event: KeyboardEvent) => {
 			const {key} = event;
 
-			if (key === 'e' || key === 'у') {
+			if (key === 'Enter' || key === 'e' || key === 'у') {
 				event.preventDefault();
 				interactWithPoint();
 			}
 		},
 		[interactWithPoint],
+	);
+
+	const cancelInteractWithPoint = useCallback(() => {
+		setOpenedPoint(null);
+		setPage(1);
+	}, []);
+
+	const cancelInteractWithPointByKeyboard = useCallback(
+		(event: KeyboardEvent) => {
+			const {key} = event;
+
+			if (key === 'Escape' || key === 'q' || key === 'й') {
+				event.preventDefault();
+				cancelInteractWithPoint();
+			}
+		},
+		[cancelInteractWithPoint],
 	);
 
 	const moveCharacterByButton = (direction: string) => {
@@ -162,6 +186,7 @@ export default function Home() {
 		}
 	};
 
+	// Перемещение
 	useEffect(() => {
 		const characterWidth =
 			characterRef?.current?.getBoundingClientRect().width || 0;
@@ -169,17 +194,18 @@ export default function Home() {
 
 		distanceWithoutScroll.current = (screenWidth - characterWidth) / 2;
 
-		if (!isInteract) {
+		if (!openedPoint) {
 			window.addEventListener('keydown', moveCharacterByKeyboard);
 		}
 
 		return () => {
-			if (!isInteract) {
+			if (!openedPoint) {
 				window.removeEventListener('keydown', moveCharacterByKeyboard);
 			}
 		};
-	}, [moveCharacterByKeyboard, isInteract]);
+	}, [moveCharacterByKeyboard, openedPoint]);
 
+	// Использовать
 	useEffect(() => {
 		window.addEventListener('keydown', interactWithPointByKeyboard);
 
@@ -188,18 +214,33 @@ export default function Home() {
 		};
 	}, [interactWithPointByKeyboard]);
 
+	// Отмена
+	useEffect(() => {
+		window.addEventListener('keydown', cancelInteractWithPointByKeyboard);
+
+		return () => {
+			window.removeEventListener('keydown', cancelInteractWithPointByKeyboard);
+		};
+	}, [cancelInteractWithPointByKeyboard]);
+
 	return (
 		<div className={`h-dvh flex items-center justify-center bg-gray-800`}>
 			<div
-				className={`w-full sm:w-xl h-full sm:h-[52rem] bg-gray-400 p-6 sm:p-16 sm:rounded-4xl shadow-xl/30 shadow-black`}
+				className={`w-full sm:w-xl h-full sm:h-208 bg-gray-400 p-6 sm:p-16 sm:rounded-4xl shadow-xl/30 shadow-black`}
 			>
 				<div
 					ref={screenRef}
-					className={`${styles.screen} rounded-4xl overflow-hidden`}
+					className={`${styles.screen} bg-sky-600 rounded-4xl overflow-hidden`}
 				>
+					<div className='bg-black h-1/12 w-full flex items-center justify-between px-8 text-white text-xl'>
+						<p>Гаврилов И.</p>
+
+						<p>Frontend</p>
+					</div>
+
 					<main
 						ref={containerRef}
-						className={`${styles.container} max-w-full touch-none overflow-y-hidden overflow-x-auto`}
+						className={`${styles.container} max-w-full touch-none overflow-y-hidden overflow-x-auto h-10/12`}
 					>
 						{/* Местность */}
 						<div
@@ -209,9 +250,7 @@ export default function Home() {
 							{POINTS.map(point => (
 								<Point
 									key={point.position}
-									isActive={activePoint === point.name}
-									toggleInteract={() => setIsInteract(draft => !draft)}
-									ref={createPointRef(point.name)}
+									isActive={activePoint?.name === point.name}
 									{...point}
 								/>
 							))}
@@ -222,49 +261,59 @@ export default function Home() {
 							ref={characterRef}
 							className={`${styles.character} ${direction === 'back' && styles.back}`}
 						>
-							<Image src={animation[status]} width={100} height={100} alt='' />
+							<Image src={animation[status]} width={140} height={140} alt='' />
 						</div>
 					</main>
-					<div ref={groundRef} className={`${styles.grass}`} />
+
+					<div className='bg-black text-xl text-white h-1/12 w-full flex justify-end items-center px-8 gap-8'>
+						{activePoint && !openedPoint && <p>A - {activePoint.text}</p>}
+
+						{openedPoint && openedPoint?.pages > page && <p>A - дальше</p>}
+
+						{openedPoint && <p>B - закрыть</p>}
+					</div>
+
+					{openedPoint?.name === 'mirror' && <StatsModal />}
+					{openedPoint?.name === 'board' && <UtilsModal page={page} />}
 				</div>
 
 				{/* Кнопки управления */}
 				<div className='flex justify-between mt-16'>
 					<div className='grid grid-cols-3 grid-rows-3'>
 						<div />
-						<button className='rounded-t-xl h-12 w-12 bg-gray-800 text-white' />
+						<button className='h-8 w-8 sm:h-12 sm:w-12 rounded-t-xl  bg-gray-800 text-white' />
 						<div />
 
 						<button
 							onPointerDown={() => moveCharacterByButton('back')}
 							onPointerUp={stopMoveCharacterByButton}
-							className='h-12 w-12 rounded-l-xl bg-gray-800 text-white'
+							className='h-8 w-8 sm:h-12 sm:w-12 rounded-l-xl bg-gray-800 text-white'
 						/>
-						<div className='h-12 w-12 bg-gray-800 text-white' />
+						<div className='h-8 w-8 sm:h-12 sm:w-12 bg-gray-800 text-white' />
 						<button
 							onPointerDown={() => moveCharacterByButton('forward')}
 							onPointerUp={stopMoveCharacterByButton}
-							className='h-12 w-12 rounded-r-xl bg-gray-800 text-white'
+							className='h-8 w-8 sm:h-12 sm:w-12 rounded-r-xl bg-gray-800 text-white'
 						/>
 
 						<div />
-						<button className='rounded-b-xl h-12 w-12 bg-gray-800 text-white' />
+						<button className='h-8 w-8 sm:h-12 rounded-b-xl sm:w-12 bg-gray-800 text-white' />
 						<div />
 					</div>
 
-					<div className='flex items-center gap-6'>
-						<div className='translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
+					<div className='flex items-center gap-4 sm:gap-6'>
+						<div className='translate-y-4 sm:translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
 							<button
-								onPointerDown={interactWithPoint}
-								className={`h-12 w-12 rounded-full bg-pink-600`}
+								onPointerDown={cancelInteractWithPoint}
+								className={`h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-600`}
 							/>
 							<p className='text-2xl text-blue-800'>B</p>
 						</div>
 
-						<div className='-translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
+						<div className='-translate-y-4 sm:-translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
 							<button
 								onPointerDown={interactWithPoint}
-								className={`h-12 w-12 rounded-full bg-pink-600`}
+								className={`h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-600`}
 							/>
 							<p className='text-2xl text-blue-800'>A</p>
 						</div>

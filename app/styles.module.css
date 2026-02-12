@@ -3,11 +3,6 @@
 	height: 400px;
 }
 
-.container {
-	display: block;
-	height: calc(100% - 64px);
-}
-
 .container::-webkit-scrollbar {
 	display: none;
 }
@@ -18,7 +13,7 @@
 
 .character {
 	position: absolute;
-	bottom: 30px;
+	bottom: 40px;
 }
 
 .back {
@@ -32,8 +27,8 @@
 }
 
 .sky {
-	background: url('/sky.jpg');
-	background-size: auto 700px;
+	background: url('/office1.png');
+	background-size: auto 100%;
 	background-repeat: repeat-x;
 	background-position: bottom;
 	background-attachment: local;

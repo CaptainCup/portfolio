@@ -1,11 +1,11 @@
+import Board from './points/Board';
 import Mirror from './points/Mirror';
 import {PointProps, Points} from './types';
 
-const Point = ({name, position, isActive, toggleInteract, ref}: PointProps) => {
+const Point = ({name, position, isActive}: PointProps) => {
 	const points: Points = {
-		mirror: (
-			<Mirror ref={ref} toggleInteract={toggleInteract} isActive={isActive} />
-		),
+		mirror: <Mirror isActive={isActive} />,
+		board: <Board isActive={isActive} />,
 	};
 
 	return (
