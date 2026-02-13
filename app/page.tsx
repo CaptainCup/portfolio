@@ -42,19 +42,19 @@ const POINTS = [
 	},
 	{
 		name: 'tasks',
-		position: 660,
+		position: 680,
 		text: 'Посмотреть задачи',
 		pages: 2,
 	},
 	{
 		name: 'closet',
-		position: 840,
+		position: 880,
 		text: 'Посмотреть дела',
 		pages: 2,
 	},
 	{
 		name: 'pc',
-		position: 970,
+		position: 1010,
 		text: 'Приступить к работе',
 		pages: 0,
 	},
