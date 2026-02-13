@@ -7,29 +7,35 @@
 	display: none;
 }
 
+.container::after {
+	content: '';
+	background-color: oklch(55.4% 0.135 66.442);
+	display: block;
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 30px;
+	bottom: 30px;
+	z-index: -1;
+}
+
 .background {
 	display: block;
 }
 
 .character {
 	position: absolute;
-	bottom: 40px;
+	bottom: 30px;
 }
 
 .back {
 	scale: -1 1;
 }
 
-.grass {
-	background: url('/grass.jpg');
-	background-size: 200px;
-	height: 64px;
-}
-
 .sky {
-	background: url('/office1.png');
+	background: url('/background.png');
 	background-size: auto 100%;
 	background-repeat: repeat-x;
-	background-position: bottom;
+	background-position-x: left;
 	background-attachment: local;
 }

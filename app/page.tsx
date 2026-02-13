@@ -5,6 +5,10 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import styles from './styles.module.css';
 import Point from './components/Point/Point';
 import InfoModal from './components/InfoModal/InfoModal';
+import PhoneIcon from '@mui/icons-material/Phone';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import EmailIcon from '@mui/icons-material/Email';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 type PointInfo = {
 	name: string;
@@ -13,32 +17,50 @@ type PointInfo = {
 	pages: number;
 };
 
-const SCROLL_CONTAINER_WIDTH = 2000;
+const SCROLL_CONTAINER_WIDTH = 1200;
+const CHARACTER_SIZE = 140;
+const MAX_SCROLL_DISTANCE = SCROLL_CONTAINER_WIDTH - CHARACTER_SIZE;
 
 const animation = {
 	idle: '/idle.gif',
 	walk: '/walking.gif',
+	sit: '/sitting.png',
 };
 
 const POINTS = [
 	{
 		name: 'mirror',
-		position: 320,
-		text: 'Посмотреть на зеркало',
+		position: 200,
+		text: 'Посмотреть на себя',
 		pages: 2,
 	},
-
 	{
 		name: 'board',
-		position: 820,
+		position: 480,
 		text: 'Посмотреть на доску',
 		pages: 3,
+	},
+	{
+		name: 'tasks',
+		position: 660,
+		text: 'Посмотреть задачи',
+		pages: 2,
+	},
+	{
+		name: 'closet',
+		position: 840,
+		text: 'Посмотреть дела',
+		pages: 2,
+	},
+	{
+		name: 'pc',
+		position: 970,
+		text: 'Приступить к работе',
+		pages: 0,
 	},
 ];
 
 export default function Home() {
-	'use no memo';
-
 	const [status, setStatus] = useState<keyof typeof animation>('idle');
 	const [direction, setDirection] = useState('forward');
 	const [activePoint, setActivePoint] = useState<PointInfo | null>(null);
@@ -70,8 +92,8 @@ export default function Home() {
 
 			if (calcPosition < 0) {
 				characterPosition.current = 0;
-			} else if (calcPosition > SCROLL_CONTAINER_WIDTH) {
-				characterPosition.current = SCROLL_CONTAINER_WIDTH;
+			} else if (calcPosition > MAX_SCROLL_DISTANCE) {
+				characterPosition.current = MAX_SCROLL_DISTANCE;
 			} else {
 				characterPosition.current = calcPosition;
 			}
@@ -80,16 +102,13 @@ export default function Home() {
 
 			if (newPosition < noScrollDistance) {
 				characterEl.style.left = `${newPosition}px`;
-			}
-			if (newPosition > SCROLL_CONTAINER_WIDTH - noScrollDistance) {
-				characterEl.style.left = `${newPosition + noScrollDistance * 2 - SCROLL_CONTAINER_WIDTH}px`;
+			} else if (newPosition > MAX_SCROLL_DISTANCE - noScrollDistance) {
+				characterEl.style.left = `${newPosition + noScrollDistance * 2 - MAX_SCROLL_DISTANCE}px`;
 			} else {
-				const newScrollPosition = newPosition - noScrollDistance;
-
-				containerEl.scrollLeft = newScrollPosition;
+				containerEl.scrollLeft = newPosition - noScrollDistance;
 			}
 
-			if (newPosition !== 0 && newPosition !== SCROLL_CONTAINER_WIDTH) {
+			if (newPosition !== 0 && newPosition !== MAX_SCROLL_DISTANCE) {
 				if (walkingTimeout.current) {
 					clearTimeout(walkingTimeout.current);
 				}
@@ -135,6 +154,17 @@ export default function Home() {
 	);
 
 	const interactWithPoint = useCallback(() => {
+		if (activePoint?.name === 'pc') {
+			if (walkingTimeout.current) {
+				clearTimeout(walkingTimeout.current);
+			}
+
+			setStatus('sit');
+			setDirection('back');
+			setOpenedPoint({...activePoint});
+			return;
+		}
+
 		if (activePoint && !openedPoint) {
 			setOpenedPoint({...activePoint});
 		}
@@ -157,9 +187,13 @@ export default function Home() {
 	);
 
 	const cancelInteractWithPoint = useCallback(() => {
+		if (openedPoint?.name === 'pc') {
+			return;
+		}
+
 		setOpenedPoint(null);
 		setPage(1);
-	}, []);
+	}, [openedPoint]);
 
 	const cancelInteractWithPointByKeyboard = useCallback(
 		(event: KeyboardEvent) => {
@@ -229,7 +263,7 @@ export default function Home() {
 			>
 				<div
 					ref={screenRef}
-					className={`${styles.screen} bg-sky-600 rounded-4xl overflow-hidden`}
+					className={`${styles.screen} bg-blue-300 rounded-4xl overflow-hidden z-10`}
 				>
 					<div className='bg-black h-1/12 w-full flex items-center justify-between px-8 text-white text-lg sm:text-xle'>
 						<p>Гаврилов И.</p>
@@ -260,7 +294,12 @@ export default function Home() {
 							ref={characterRef}
 							className={`${styles.character} ${direction === 'back' && styles.back}`}
 						>
-							<Image src={animation[status]} width={140} height={140} alt='' />
+							<Image
+								src={animation[status]}
+								width={CHARACTER_SIZE}
+								height={CHARACTER_SIZE}
+								alt=''
+							/>
 						</div>
 					</main>
 
@@ -269,54 +308,96 @@ export default function Home() {
 
 						{openedPoint && openedPoint?.pages > page && <p>A - дальше</p>}
 
-						{openedPoint && <p>B - закрыть</p>}
+						{openedPoint && openedPoint.name !== 'pc' && <p>B - закрыть</p>}
+
+						{openedPoint && openedPoint.name === 'pc' && (
+							<p>Работаю над проектом ...</p>
+						)}
 					</div>
 
 					{openedPoint && <InfoModal modal={openedPoint.name} page={page} />}
 				</div>
 
 				{/* Кнопки управления */}
-				<div className='flex justify-between mt-16'>
-					<div className='grid grid-cols-3 grid-rows-3'>
-						<div />
-						<button className='h-10 w-10 rounded-t-xl  bg-gray-800 text-white' />
-						<div />
-
-						<button
-							onPointerDown={() => moveCharacterByButton('back')}
-							onPointerUp={stopMoveCharacterByButton}
-							className='h-10 w-10 rounded-l-xl bg-gray-800 text-white'
-						/>
-						<div className='h-10 w-10 bg-gray-800 text-white' />
-						<button
-							onPointerDown={() => moveCharacterByButton('forward')}
-							onPointerUp={stopMoveCharacterByButton}
-							className='h-10 w-10 rounded-r-xl bg-gray-800 text-white'
-						/>
-
-						<div />
-						<button className='h-10 w-10 rounded-b-xl bg-gray-800 text-white' />
-						<div />
-					</div>
-
-					<div className='flex items-center gap-4 sm:gap-6'>
-						<div className='translate-y-4 sm:translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
+				{openedPoint?.name !== 'pc' && (
+					<div className='flex justify-between mt-16'>
+						<div className='grid grid-cols-3 grid-rows-3'>
+							<div />
 							<button
-								onPointerDown={cancelInteractWithPoint}
-								className={`h-10 w-10 rounded-full bg-pink-600`}
+								onPointerDown={() => moveCharacterByButton('forward')}
+								onPointerUp={stopMoveCharacterByButton}
+								className='h-10 w-10 rounded-t-xl  bg-gray-800 text-white'
 							/>
-							<p className='text-2xl text-blue-800'>B</p>
+							<div />
+
+							<button
+								onPointerDown={() => moveCharacterByButton('back')}
+								onPointerUp={stopMoveCharacterByButton}
+								className='h-10 w-10 rounded-l-xl bg-gray-800 text-white'
+							/>
+							<div className='h-10 w-10 bg-gray-800 text-white' />
+							<button
+								onPointerDown={() => moveCharacterByButton('forward')}
+								onPointerUp={stopMoveCharacterByButton}
+								className='h-10 w-10 rounded-r-xl bg-gray-800 text-white'
+							/>
+
+							<div />
+							<button
+								onPointerDown={() => moveCharacterByButton('back')}
+								onPointerUp={stopMoveCharacterByButton}
+								className='h-10 w-10 rounded-b-xl bg-gray-800 text-white'
+							/>
+							<div />
 						</div>
 
-						<div className='-translate-y-4 sm:-translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
-							<button
-								onPointerDown={interactWithPoint}
-								className={`h-10 w-10 rounded-full bg-pink-600`}
-							/>
-							<p className='text-2xl text-blue-800'>A</p>
+						<div className='flex items-center gap-4 sm:gap-6'>
+							<div className='translate-y-4 sm:translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
+								<button
+									onPointerDown={cancelInteractWithPoint}
+									className={`h-10 w-10 rounded-full bg-pink-600`}
+								/>
+								<p className='text-2xl text-blue-800'>B</p>
+							</div>
+
+							<div className='-translate-y-4 sm:-translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
+								<button
+									onPointerDown={interactWithPoint}
+									className={`h-10 w-10 rounded-full bg-pink-600`}
+								/>
+								<p className='text-2xl text-blue-800'>A</p>
+							</div>
 						</div>
 					</div>
-				</div>
+				)}
+
+				{openedPoint?.name === 'pc' && (
+					<div className='flex flex-col gap-4 mt-4'>
+						<p>Игры закончились - началась работа</p>
+						<div className='flex gap-4'>
+							<PhoneIcon />
+							<a href='tel:+79516343672'>+7 951 634-36-72</a>
+						</div>
+						<div className='flex gap-4'>
+							<TelegramIcon />
+							<a href='http://t.me/code_gavrilov' target='blank'>
+								@code_gavrilov
+							</a>
+						</div>
+						<div className='flex gap-4'>
+							<EmailIcon />
+							<a href='mailto:poi.lincoln@gmail.com' target='blank'>
+								poi.lincoln@gmail.com
+							</a>
+						</div>
+						<div className='flex gap-4'>
+							<GitHubIcon />
+							<a href='https://github.com/CaptainCup' target='blank'>
+								CaptainCup
+							</a>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

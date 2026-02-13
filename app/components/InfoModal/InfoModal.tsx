@@ -1,4 +1,6 @@
+import Projects from './modals/Projects';
 import Stats from './modals/Stats';
+import Tasks from './modals/Tasks';
 import Utils from './modals/Utils';
 import {InfoModalProps, Modals} from './types';
 
@@ -6,6 +8,8 @@ const InfoModal = ({modal, page}: InfoModalProps) => {
 	const modals: Modals = {
 		mirror: <Stats page={page} />,
 		board: <Utils page={page} />,
+		tasks: <Tasks page={page} />,
+		closet: <Projects page={page} />,
 	};
 
 	return (
