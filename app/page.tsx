@@ -4,8 +4,7 @@ import Image from 'next/image';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import styles from './styles.module.css';
 import Point from './components/Point/Point';
-import StatsModal from './components/StatsModal/StatsModal';
-import UtilsModal from './components/UtilsModal/UtilsModal';
+import InfoModal from './components/InfoModal/InfoModal';
 
 type PointInfo = {
 	name: string;
@@ -26,7 +25,7 @@ const POINTS = [
 		name: 'mirror',
 		position: 320,
 		text: 'Посмотреть на зеркало',
-		pages: 0,
+		pages: 2,
 	},
 
 	{
@@ -232,7 +231,7 @@ export default function Home() {
 					ref={screenRef}
 					className={`${styles.screen} bg-sky-600 rounded-4xl overflow-hidden`}
 				>
-					<div className='bg-black h-1/12 w-full flex items-center justify-between px-8 text-white text-xl'>
+					<div className='bg-black h-1/12 w-full flex items-center justify-between px-8 text-white text-lg sm:text-xle'>
 						<p>Гаврилов И.</p>
 
 						<p>Frontend</p>
@@ -265,7 +264,7 @@ export default function Home() {
 						</div>
 					</main>
 
-					<div className='bg-black text-xl text-white h-1/12 w-full flex justify-end items-center px-8 gap-8'>
+					<div className='bg-black text-lg sm:text-xl text-white h-1/12 w-full flex justify-end items-center px-8 gap-8'>
 						{activePoint && !openedPoint && <p>A - {activePoint.text}</p>}
 
 						{openedPoint && openedPoint?.pages > page && <p>A - дальше</p>}
@@ -273,31 +272,30 @@ export default function Home() {
 						{openedPoint && <p>B - закрыть</p>}
 					</div>
 
-					{openedPoint?.name === 'mirror' && <StatsModal />}
-					{openedPoint?.name === 'board' && <UtilsModal page={page} />}
+					{openedPoint && <InfoModal modal={openedPoint.name} page={page} />}
 				</div>
 
 				{/* Кнопки управления */}
 				<div className='flex justify-between mt-16'>
 					<div className='grid grid-cols-3 grid-rows-3'>
 						<div />
-						<button className='h-8 w-8 sm:h-12 sm:w-12 rounded-t-xl  bg-gray-800 text-white' />
+						<button className='h-10 w-10 rounded-t-xl  bg-gray-800 text-white' />
 						<div />
 
 						<button
 							onPointerDown={() => moveCharacterByButton('back')}
 							onPointerUp={stopMoveCharacterByButton}
-							className='h-8 w-8 sm:h-12 sm:w-12 rounded-l-xl bg-gray-800 text-white'
+							className='h-10 w-10 rounded-l-xl bg-gray-800 text-white'
 						/>
-						<div className='h-8 w-8 sm:h-12 sm:w-12 bg-gray-800 text-white' />
+						<div className='h-10 w-10 bg-gray-800 text-white' />
 						<button
 							onPointerDown={() => moveCharacterByButton('forward')}
 							onPointerUp={stopMoveCharacterByButton}
-							className='h-8 w-8 sm:h-12 sm:w-12 rounded-r-xl bg-gray-800 text-white'
+							className='h-10 w-10 rounded-r-xl bg-gray-800 text-white'
 						/>
 
 						<div />
-						<button className='h-8 w-8 sm:h-12 rounded-b-xl sm:w-12 bg-gray-800 text-white' />
+						<button className='h-10 w-10 rounded-b-xl bg-gray-800 text-white' />
 						<div />
 					</div>
 
@@ -305,7 +303,7 @@ export default function Home() {
 						<div className='translate-y-4 sm:translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
 							<button
 								onPointerDown={cancelInteractWithPoint}
-								className={`h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-600`}
+								className={`h-10 w-10 rounded-full bg-pink-600`}
 							/>
 							<p className='text-2xl text-blue-800'>B</p>
 						</div>
@@ -313,7 +311,7 @@ export default function Home() {
 						<div className='-translate-y-4 sm:-translate-y-6 -rotate-30 flex flex-col items-center gap-2'>
 							<button
 								onPointerDown={interactWithPoint}
-								className={`h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-600`}
+								className={`h-10 w-10 rounded-full bg-pink-600`}
 							/>
 							<p className='text-2xl text-blue-800'>A</p>
 						</div>

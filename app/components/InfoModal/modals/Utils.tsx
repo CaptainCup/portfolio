@@ -1,11 +1,11 @@
-const UtilsModal = ({page}: {page: number}) => {
+const Utils = ({page}: {page: number}) => {
 	return (
-		<div className='absolute inset-x-0 inset-y-1/12 bg-white text-black py-4 px-8 flex flex-col z-10'>
-			<div className='w-full pb-4 border-b-2 border-white'>
+		<div className='w-full h-full py-4 px-8 bg-white text-black flex flex-col'>
+			<div className='w-full pb-4'>
 				<p className='text-2xl'>Стек</p>
 			</div>
 
-			<div className='flex flex-col gap-4 text-xl flex-1'>
+			<div className='flex flex-col gap-4 text-md sm:text-xl flex-1'>
 				{page === 1 && (
 					<>
 						<div className='flex flex-col gap-1'>
@@ -66,4 +66,4 @@ const UtilsModal = ({page}: {page: number}) => {
 	);
 };
 
-export default UtilsModal;
+export default Utils;
